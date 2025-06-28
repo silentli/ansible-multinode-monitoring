@@ -1,0 +1,27 @@
+---
+# Mock Service Configuration Variables
+
+# Service description
+mock_service_description: "Mock HTTP Service"
+
+# Service name (used for systemd service name)
+mock_service_name: "mock-service"
+
+# User and group for the service
+mock_service_user: "mock-service"
+mock_service_group: "mock-service"
+
+# Paths
+mock_service_working_dir: "/opt/mock-service"
+mock_service_python_path: "/usr/bin/python3"
+mock_service_script_path: "/opt/mock-service/mock_service.py"
+
+# Logging
+mock_service_log_file: "/var/log/mock-service.log"
+
+# Service behavior
+mock_service_restart_policy: "always"
+mock_service_restart_sec: 10
+
+# Service port (for reference)
+mock_service_port: 8080

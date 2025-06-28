@@ -1,0 +1,19 @@
+[Unit]
+Description={{ mock_service_description }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ mock_service_user }}
+Group={{ mock_service_group }}
+WorkingDirectory={{ mock_service_working_dir }}
+Environment=MOCK_SERVICE_PORT={{ mock_service_port }}
+Environment=MOCK_SERVICE_LOG_FILE={{ mock_service_log_file }}
+ExecStart={{ mock_service_python_path }} {{ mock_service_script_path }}
+Restart={{ mock_service_restart_policy }}
+RestartSec={{ mock_service_restart_sec }}
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
