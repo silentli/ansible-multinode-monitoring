@@ -8,13 +8,16 @@ import os
 import logging
 from datetime import datetime
 
+# Get log file from environment variable or use default
+log_file = os.environ.get('MOCK_SERVICE_LOG_FILE', '/var/log/mock-service.log')
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     
     handlers=[
         logging.StreamHandler(),  # Console output
-        logging.FileHandler('/var/log/mock-service.log')  # File output
+        logging.FileHandler(log_file)  # File output
     ]
 )
 logger = logging.getLogger('mock-service')
