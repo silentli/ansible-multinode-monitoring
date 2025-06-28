@@ -115,7 +115,8 @@ Simulates a basic web service for testing and monitoring purposes.
 """
 def main():
     """Main function to start the server"""
-    PORT = 8080
+    # Get port from environment variable or use default
+    PORT = int(os.environ.get('MOCK_SERVICE_PORT', 8080))
     HOST = '0.0.0.0'
     
     try:
