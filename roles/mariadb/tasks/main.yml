@@ -1,0 +1,75 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: [mariadb, install, always]
+
+- name: Install MariaDB server and client
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-mysqldb
+    state: present
+  tags: [mariadb, install]
+
+- name: Start and enable MariaDB service
+  systemd:
+    name: "{{ mariadb_service_name }}"
+    state: started
+    enabled: yes
+  tags: [mariadb, service]
+
+- name: Configure MariaDB to listen on all interfaces
+  template:
+    src: 50-server.cnf.j2
+    dest: "{{ mariadb_config_dir }}/50-server.cnf"
+    mode: '0644'
+  notify: restart mariadb
+  tags: [mariadb, config]
+
+- name: Create MariaDB root password
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mariadb_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+  tags: [mariadb, setup]
+
+- name: Create monitoring database
+  mysql_db:
+    name: "{{ mariadb_monitoring_database }}"
+    state: present
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_host: localhost
+  tags: [mariadb, setup]
+
+- name: Create monitoring user with privileges
+  mysql_user:
+    name: "{{ mariadb_monitoring_user }}"
+    password: "{{ mariadb_monitoring_password }}"
+    priv: "{{ mariadb_monitoring_database }}.*:ALL"
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_host: localhost
+  tags: [mariadb, setup]
+
+- name: Create sample table for testing
+  mysql_query:
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_host: localhost
+    database: "{{ mariadb_monitoring_database }}"
+    query: |
+      CREATE TABLE IF NOT EXISTS system_metrics (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        metric_name VARCHAR(100) NOT NULL,
+        metric_value FLOAT NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+  tags: [mariadb, setup, sample-data]

@@ -1,0 +1,5 @@
+---
+- name: restart mariadb
+  systemd:
+    name: "{{ mariadb_service_name }}"
+    state: restarted 

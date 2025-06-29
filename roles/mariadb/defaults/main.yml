@@ -1,0 +1,42 @@
+---
+# MariaDB Configuration Variables
+
+# Service description
+mariadb_description: "MariaDB Database Server"
+
+# Service name (used for systemd service name)
+mariadb_service_name: "mariadb"
+
+# User and group for the service
+mariadb_user: "mysql"
+mariadb_group: "mysql"
+
+# Database configuration (passwords should be overridden in group_vars or vault)
+mariadb_root_password: "rootpassword"
+mariadb_monitoring_password: "monitoringpass"
+mariadb_monitoring_database: "monitoring"
+mariadb_monitoring_user: "monitoring"
+
+# Network configuration
+mariadb_bind_address: "0.0.0.0"
+mariadb_port: 3306
+
+# Paths
+mariadb_config_dir: "/etc/mysql/mariadb.conf.d"
+mariadb_data_dir: "/var/lib/mysql"
+mariadb_log_dir: "/var/log/mysql"
+
+# Performance settings
+mariadb_max_connections: 100
+mariadb_max_allowed_packet: "16M"
+mariadb_innodb_buffer_pool_size: "128M"
+mariadb_innodb_log_file_size: "48M"
+
+# Character set
+mariadb_character_set: "utf8mb4"
+mariadb_collation: "utf8mb4_unicode_ci"
+
+# Logging settings
+mariadb_general_log: 1
+mariadb_slow_query_log: 1
+mariadb_long_query_time: 2 

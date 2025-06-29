@@ -1,0 +1,36 @@
+[mysqld]
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
+datadir         = {{ mariadb_data_dir }}
+log-error       = {{ mariadb_log_dir }}/error.log
+
+bind-address    = {{ mariadb_bind_address }}
+
+# Basic settings
+max_connections = {{ mariadb_max_connections }}
+max_allowed_packet = {{ mariadb_max_allowed_packet }}
+table_open_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+read_buffer_size = 256K
+read_rnd_buffer_size = 512K
+myisam_sort_buffer_size = 8M
+
+# InnoDB settings
+innodb_buffer_pool_size = {{ mariadb_innodb_buffer_pool_size }}
+innodb_log_file_size = {{ mariadb_innodb_log_file_size }}
+innodb_file_per_table = 1
+innodb_open_files = 400
+innodb_io_capacity = 400
+innodb_flush_method = O_DIRECT
+
+# Character set
+character-set-server = {{ mariadb_character_set }}
+collation-server = {{ mariadb_collation }}
+
+# Logging
+general_log = {{ mariadb_general_log }}
+general_log_file = {{ mariadb_log_dir }}/general.log
+slow_query_log = {{ mariadb_slow_query_log }}
+slow_query_log_file = {{ mariadb_log_dir }}/slow.log
+long_query_time = {{ mariadb_long_query_time }}
