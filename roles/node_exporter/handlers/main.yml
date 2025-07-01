@@ -1,0 +1,5 @@
+---
+- name: restart node-exporter
+  systemd:
+    name: "{{ node_exporter_service_name }}"
+    state: restarted
