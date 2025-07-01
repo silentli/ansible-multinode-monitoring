@@ -1,0 +1,74 @@
+---
+- name: Create prometheus user
+  user:
+    name: "{{ prometheus_user }}"
+    system: yes
+    shell: /bin/false
+    home: "{{ prometheus_install_dir }}"
+    create_home: no
+
+- name: Create prometheus directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  loop:
+    - "{{ prometheus_install_dir }}"
+    - "{{ prometheus_data_dir }}"
+    - "{{ prometheus_config_dir }}"
+
+- name: Download Prometheus
+  get_url:
+    url: "{{ prometheus_release_url }}"
+    dest: "{{ prometheus_tmp_dir }}/{{ prometheus_archive }}"
+    mode: '0644'
+    timeout: 60
+
+- name: Extract Prometheus
+  unarchive:
+    src: "{{ prometheus_tmp_dir }}/{{ prometheus_archive }}"
+    dest: "{{ prometheus_tmp_dir }}"
+    remote_src: yes
+    creates: "{{ prometheus_extract_dir }}/prometheus"
+
+- name: Copy Prometheus binary
+  copy:
+    src: "{{ prometheus_extract_dir }}/prometheus"
+    dest: "{{ prometheus_install_dir }}/prometheus"
+    mode: '0755'
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    remote_src: yes
+
+- name: Copy Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+    mode: '0644'
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  notify: restart prometheus
+
+- name: Create systemd service file
+  template:
+    src: prometheus.service.j2
+    dest: "/etc/systemd/system/{{ prometheus_service_name }}.service"
+    mode: '0644'
+  notify: restart prometheus
+
+- name: Enable and start Prometheus
+  systemd:
+    name: "{{ prometheus_service_name }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Clean up temporary files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ prometheus_tmp_dir }}/{{ prometheus_archive }}"
+    - "{{ prometheus_extract_dir }}"

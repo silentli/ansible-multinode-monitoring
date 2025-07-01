@@ -1,0 +1,36 @@
+---
+# Prometheus Configuration Variables
+
+# Service description
+prometheus_description: "Prometheus Monitoring Server"
+
+# Service name (used for systemd service name)
+prometheus_service_name: "prometheus"
+
+# User and group for the service
+prometheus_user: "prometheus"
+prometheus_group: "prometheus"
+
+# Version
+prometheus_version: "2.47.2"
+
+# Paths
+prometheus_install_dir: "/opt/prometheus"
+prometheus_config_dir: "/opt/prometheus/config"
+prometheus_data_dir: "/opt/prometheus/data"
+prometheus_tmp_dir: "/tmp"
+prometheus_extract_dir: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64"
+
+# Release and archive
+prometheus_release_url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+prometheus_archive: "prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+
+# Network configuration
+prometheus_port: 9090
+
+# Logging (for future use)
+prometheus_log_file: "/var/log/prometheus.log"
+
+# Service behavior
+prometheus_restart_policy: "always"
+prometheus_restart_sec: 10

@@ -1,0 +1,14 @@
+[Unit]
+Description={{ prometheus_description }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ prometheus_user }}
+Group={{ prometheus_group }}
+ExecStart={{ prometheus_install_dir }}/prometheus --config.file={{ prometheus_config_dir }}/prometheus.yml --storage.tsdb.path={{ prometheus_data_dir }} --web.listen-address=:{{ prometheus_port }}
+Restart={{ prometheus_restart_policy }}
+RestartSec={{ prometheus_restart_sec }}
+
+[Install]
+WantedBy=multi-user.target

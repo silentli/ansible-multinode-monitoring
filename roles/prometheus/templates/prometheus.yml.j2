@@ -1,0 +1,37 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself (runs on monitoring_servers group)
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter on all app_servers group hosts
+  - job_name: 'node-exporter-app-servers'
+    static_configs:
+      - targets: 
+{% for host in groups['app_servers'] %}
+        - '{{ hostvars[host]['ansible_host'] }}:9100'
+{% endfor %}
+
+  # Node Exporter on all database_servers group hosts
+  - job_name: 'node-exporter-database-servers'
+    static_configs:
+      - targets:
+{% for host in groups['database_servers'] %}
+        - '{{ hostvars[host]['ansible_host'] }}:9100'
+{% endfor %}
+
+  # Mock Service metrics on all app_servers group hosts
+  - job_name: 'mock-service'
+    static_configs:
+      - targets:
+{% for host in groups['app_servers'] %}
+        - '{{ hostvars[host]['ansible_host'] }}:{{ mock_service_port | default(8080) }}'
+{% endfor %}
