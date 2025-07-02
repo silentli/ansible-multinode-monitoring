@@ -1,0 +1,131 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "{{ grafana_dashboard_title }}",
+    "tags": {{ grafana_dashboard_tags | to_json }},
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "yAxes": [
+          {"label": "CPU %", "min": 0, "max": 100},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "yAxes": [
+          {"label": "Memory %", "min": 0, "max": 100},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Disk Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100",
+            "legendFormat": "{{instance}} - {{mountpoint}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "yAxes": [
+          {"label": "Disk %", "min": 0, "max": 100},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Network Traffic",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total[5m])",
+            "legendFormat": "{{instance}} - {{device}} (RX)"
+          },
+          {
+            "expr": "rate(node_network_transmit_bytes_total[5m])",
+            "legendFormat": "{{instance}} - {{device}} (TX)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "yAxes": [
+          {"label": "Bytes/sec"},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Mock Service Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "mock_service_info",
+            "legendFormat": "Mock Service"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "System Load",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "node_load1",
+            "legendFormat": "{{instance}} - 1m"
+          },
+          {
+            "expr": "node_load5",
+            "legendFormat": "{{instance}} - 5m"
+          },
+          {
+            "expr": "node_load15",
+            "legendFormat": "{{instance}} - 15m"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "yAxes": [
+          {"label": "Load Average"},
+          {"show": false}
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

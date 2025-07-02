@@ -1,0 +1,44 @@
+---
+# Grafana Configuration Variables
+
+# Service description
+grafana_description: "Grafana Dashboard Server"
+
+# Service name (used for systemd service name)
+grafana_service_name: "grafana-server"
+
+# User and group for the service
+grafana_user: "grafana"
+grafana_group: "grafana"
+
+# Version
+grafana_version: "latest"
+
+# Paths
+grafana_install_dir: "/usr/share/grafana"
+grafana_config_dir: "/etc/grafana"
+grafana_data_dir: "/var/lib/grafana"
+grafana_log_dir: "/var/log/grafana"
+
+# Network configuration
+grafana_port: 3000
+grafana_bind_address: "0.0.0.0"
+
+# Database configuration (for future use)
+grafana_database_type: "sqlite3"
+grafana_database_path: "/var/lib/grafana/grafana.db"
+
+# Authentication
+grafana_admin_user: "admin"
+grafana_admin_password: "admin"
+
+# Data sources
+grafana_prometheus_url: "http://localhost:9090"
+
+# Dashboard configuration
+grafana_dashboard_title: "Multi-Node System Monitoring"
+grafana_dashboard_tags: ["monitoring", "system"]
+
+# Service behavior
+grafana_restart_policy: "always"
+grafana_restart_sec: 10
