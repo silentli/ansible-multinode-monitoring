@@ -1,5 +1,5 @@
 # Playbook: monitoring_check.yml
-# Perform live health checks for all services across all nodes.
+# Purpose: Perform live health checks for all services across all nodes.
 # Usage: ansible-playbook -i inventory/hosts.ini playbooks/monitoring_check.yml
 ---
 - name: Health Check - Verify All Services
@@ -9,7 +9,7 @@
 
   tasks:
     - name: Check if mock service is running (app servers)
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ ansible_default_ipv4.address }}:{{ mock_service_port | default(8080) }}"
         method: GET
         status_code: 200
@@ -18,14 +18,14 @@
       ignore_errors: yes
 
     - name: Check if MariaDB is running (database servers)
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"
         port: "{{ mariadb_port | default(3306) }}"
         timeout: 10
       when: inventory_hostname in groups['database_servers']
 
     - name: Check if Node Exporter is running
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ ansible_default_ipv4.address }}:9100/metrics"
         method: GET
         status_code: 200
@@ -34,7 +34,7 @@
       ignore_errors: yes
 
     - name: Check if Prometheus is running (monitoring servers)
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ ansible_default_ipv4.address }}:{{ prometheus_port | default(9090) }}/api/v1/status/targets"
         method: GET
         status_code: 200
@@ -43,7 +43,7 @@
       ignore_errors: yes
 
     - name: Check if Grafana is running (monitoring servers)
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ ansible_default_ipv4.address }}:{{ grafana_port | default(3000) }}/api/health"
         method: GET
         status_code: 200
@@ -52,7 +52,7 @@
       ignore_errors: yes
 
     - name: Display health check results
-      debug:
+      ansible.builtin.debug:
         msg: |
           ===== Health Check Results for {{ inventory_hostname }} ({{ ansible_default_ipv4.address }}) =====
           {% if inventory_hostname in groups['app_servers'] %}

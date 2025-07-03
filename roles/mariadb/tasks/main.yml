@@ -1,12 +1,12 @@
 ---
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
   tags: [mariadb, install, always]
 
 - name: Install MariaDB server and client
-  apt:
+  ansible.builtin.apt:
     name:
       - mariadb-server
       - mariadb-client
@@ -15,14 +15,14 @@
   tags: [mariadb, install]
 
 - name: Start and enable MariaDB service
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ mariadb_service_name }}"
     state: started
     enabled: yes
   tags: [mariadb, service]
 
 - name: Configure MariaDB to listen on all interfaces
-  template:
+  ansible.builtin.template:
     src: 50-server.cnf.j2
     dest: "{{ mariadb_config_dir }}/50-server.cnf"
     mode: '0644'
@@ -30,7 +30,7 @@
   tags: [mariadb, config]
 
 - name: Create MariaDB root password
-  mysql_user:
+  community.mysql.mysql_user:
     name: root
     host: localhost
     password: "{{ mariadb_root_password }}"
@@ -39,7 +39,7 @@
   tags: [mariadb, setup]
 
 - name: Create monitoring database
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ mariadb_monitoring_database }}"
     state: present
     login_user: root
@@ -48,7 +48,7 @@
   tags: [mariadb, setup]
 
 - name: Create monitoring user with privileges
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ mariadb_monitoring_user }}"
     password: "{{ mariadb_monitoring_password }}"
     priv: "{{ mariadb_monitoring_database }}.*:ALL"
@@ -60,7 +60,7 @@
   tags: [mariadb, setup]
 
 - name: Create sample table for testing
-  mysql_query:
+  community.mysql.mysql_query:
     login_user: root
     login_password: "{{ mariadb_root_password }}"
     login_host: localhost

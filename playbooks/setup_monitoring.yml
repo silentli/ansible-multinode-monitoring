@@ -13,7 +13,7 @@
 
   post_tasks:
     - name: Wait for Prometheus to be available
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"
         port: "{{ prometheus_port }}"
         delay: 10
@@ -21,7 +21,7 @@
       tags: ['prometheus']
 
     - name: Wait for Grafana to be available
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"
         port: "{{ grafana_port }}"
         delay: 10
@@ -29,7 +29,7 @@
       tags: ['grafana']
 
     - name: Display service status
-      debug:
+      ansible.builtin.debug:
         msg: |
           ===== Service Status for {{ inventory_hostname }} =====
           Prometheus: http://{{ ansible_default_ipv4.address }}:{{ prometheus_port }}

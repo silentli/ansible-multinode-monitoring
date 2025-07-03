@@ -1,11 +1,11 @@
 ---
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
 - name: Install Python and pip
-  apt:
+  ansible.builtin.apt:
     name:
       - python3
       - python3-pip
@@ -13,7 +13,7 @@
     state: present
 
 - name: Create mock service directory
-  file:
+  ansible.builtin.file:
     path: "{{ mock_service_working_dir }}"
     state: directory
     mode: '0755'
@@ -21,7 +21,7 @@
     group: "{{ mock_service_group }}"
 
 - name: Create mock service user
-  user:
+  ansible.builtin.user:
     name: "{{ mock_service_user }}"
     system: yes
     shell: /bin/false
@@ -29,7 +29,7 @@
     create_home: no
 
 - name: Copy mock service script
-  copy:
+  ansible.builtin.copy:
     src: mock_service.py
     dest: "{{ mock_service_script_path }}"
     mode: '0755'
@@ -37,14 +37,14 @@
     group: "{{ mock_service_group }}"
 
 - name: Create systemd service file
-  template:
+  ansible.builtin.template:
     src: mock-service.service.j2
     dest: /etc/systemd/system/{{ mock_service_name }}.service
     mode: '0644'
   notify: restart mock-service
 
 - name: Enable and start mock service
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ mock_service_name }}"
     enabled: yes
     state: started

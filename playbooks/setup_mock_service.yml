@@ -13,7 +13,7 @@
 
   post_tasks:
     - name: Wait for mock service to be available
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"
         port: "{{ mock_service_port }}"
         delay: 10
@@ -21,7 +21,7 @@
       tags: ['mock_service']
 
     - name: Wait for node exporter to be available
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ ansible_default_ipv4.address }}"
         port: 9100
         delay: 10
@@ -29,7 +29,7 @@
       tags: ['node_exporter']
 
     - name: Display service status
-      debug:
+      ansible.builtin.debug:
         msg: |
           ===== Service Status for {{ inventory_hostname }} =====
           Mock Service: http://{{ ansible_default_ipv4.address }}:{{ mock_service_port }}

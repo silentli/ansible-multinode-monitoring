@@ -1,11 +1,11 @@
 ---
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
 - name: Install required packages
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - software-properties-common
@@ -13,37 +13,37 @@
     state: present
 
 - name: Add Grafana GPG key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://packages.grafana.com/gpg.key
     state: present
 
 - name: Add Grafana repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb https://packages.grafana.com/oss/deb stable main"
     state: present
     filename: grafana
 
 - name: Install Grafana
-  apt:
+  ansible.builtin.apt:
     name: grafana
     state: present
     update_cache: yes
 
 - name: Start and enable Grafana
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ grafana_service_name }}"
     state: started
     enabled: yes
 
 - name: Wait for Grafana to be ready
-  wait_for:
+  ansible.builtin.wait_for:
     host: "{{ grafana_bind_address }}"
     port: "{{ grafana_port }}"
     delay: 10
     timeout: 60
 
 - name: Configure Grafana data source (Prometheus)
-  uri:
+  ansible.builtin.uri:
     url: "http://{{ grafana_bind_address }}:{{ grafana_port }}/api/datasources"
     method: POST
     headers:
@@ -65,7 +65,7 @@
   until: grafana_datasource.status == 200 or grafana_datasource.status == 409
 
 - name: Import default dashboard
-  uri:
+  ansible.builtin.uri:
     url: "http://{{ grafana_bind_address }}:{{ grafana_port }}/api/dashboards/db"
     method: POST
     headers:

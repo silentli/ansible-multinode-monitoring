@@ -1,6 +1,6 @@
 ---
 - name: Create node exporter user
-  user:
+  ansible.builtin.user:
     name: "{{ node_exporter_user }}"
     system: yes
     shell: /bin/false
@@ -8,7 +8,7 @@
     create_home: no
 
 - name: Create node exporter directory
-  file:
+  ansible.builtin.file:
     path: "{{ node_exporter_install_dir }}"
     state: directory
     mode: '0755'
@@ -16,21 +16,21 @@
     group: "{{ node_exporter_group }}"
 
 - name: Download Node Exporter
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ node_exporter_release_url }}"
     dest: "{{ node_exporter_tmp_dir }}/{{ node_exporter_archive }}"
     mode: '0644'
     timeout: 60
 
 - name: Extract Node Exporter
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ node_exporter_tmp_dir }}/{{ node_exporter_archive }}"
     dest: "{{ node_exporter_tmp_dir }}"
     remote_src: yes
     creates: "{{ node_exporter_extract_dir }}/node_exporter"
 
 - name: Copy Node Exporter binary
-  copy:
+  ansible.builtin.copy:
     src: "{{ node_exporter_extract_dir }}/node_exporter"
     dest: "{{ node_exporter_install_dir }}/node_exporter"
     mode: '0755'
@@ -39,21 +39,21 @@
     remote_src: yes
 
 - name: Create systemd service file
-  template:
+  ansible.builtin.template:
     src: node-exporter.service.j2
     dest: "/etc/systemd/system/{{ node_exporter_service_name }}.service"
     mode: '0644'
   notify: restart node-exporter
 
 - name: Enable and start Node Exporter
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ node_exporter_service_name }}"
     enabled: yes
     state: started
     daemon_reload: yes
 
 - name: Clean up temporary files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
