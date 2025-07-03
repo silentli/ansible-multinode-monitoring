@@ -57,3 +57,7 @@ vagrant destroy -f
 - `setup_monitoring.yml` — Sets up Prometheus and Grafana on monitoring servers.
 - `setup_all.yml` — Orchestrates the full stack setup and health checks.
 - `monitoring_check.yml` — Performs live health checks on all services.
+
+## Updates
+
+- Refactor: All playbooks and roles now use FQCN (Fully Qualified Collection Name) for all Ansible modules for clarity and best practice. See commit [a0bbb57](https://github.com/silentli/ansible-multinode-monitoring/commit/a0bbb5740632e12ee8339531160222cc9fe70f10).
