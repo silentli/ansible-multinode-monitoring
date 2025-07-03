@@ -1,0 +1,16 @@
+---
+- name: Setup Complete Monitoring Stack
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Setup database servers
+      ansible.builtin.import_playbook: setup_database.yml
+
+    - name: Setup app servers
+      ansible.builtin.import_playbook: setup_mock_service.yml
+
+    - name: Setup monitoring servers
+      ansible.builtin.import_playbook: setup_monitoring.yml
+
+    - name: Run health checks
+      ansible.builtin.import_playbook: monitoring_check.yml

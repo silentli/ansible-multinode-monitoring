@@ -1,0 +1,37 @@
+# Playbook: setup_database.yml
+# Set up MariaDB and Node Exporter on all database servers.
+# Usage: ansible-playbook -i inventory/hosts.ini playbooks/setup_database.yml
+---
+- name: Setup MariaDB and Node Exporter on database servers
+  hosts: database_servers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - { role: mariadb, tags: ['mariadb'] }
+    - { role: node_exporter, tags: ['node_exporter'] }
+
+  post_tasks:
+    - name: Wait for MariaDB to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: "{{ mariadb_port }}"
+        delay: 10
+        timeout: 60
+      tags: ['mariadb']
+
+    - name: Wait for node exporter to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 9100
+        delay: 10
+        timeout: 60
+      tags: ['node_exporter']
+
+    - name: Display service status
+      debug:
+        msg: |
+          ===== Service Status for {{ inventory_hostname }} =====
+          MariaDB: {{ ansible_default_ipv4.address }}:{{ mariadb_port }}
+          Node Exporter: http://{{ ansible_default_ipv4.address }}:9100/metrics
+      tags: ['status']

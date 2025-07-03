@@ -1,0 +1,37 @@
+# Playbook: setup_mock_service.yml
+# Set up Mock Service and Node Exporter on all app servers.
+# Usage: ansible-playbook -i inventory/hosts.ini playbooks/setup_mock_service.yml
+---
+- name: Setup Mock Service and Node Exporter on app servers
+  hosts: app_servers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - { role: mock_service, tags: ['mock_service'] }
+    - { role: node_exporter, tags: ['node_exporter'] }
+
+  post_tasks:
+    - name: Wait for mock service to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: "{{ mock_service_port }}"
+        delay: 10
+        timeout: 60
+      tags: ['mock_service']
+
+    - name: Wait for node exporter to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 9100
+        delay: 10
+        timeout: 60
+      tags: ['node_exporter']
+
+    - name: Display service status
+      debug:
+        msg: |
+          ===== Service Status for {{ inventory_hostname }} =====
+          Mock Service: http://{{ ansible_default_ipv4.address }}:{{ mock_service_port }}
+          Node Exporter: http://{{ ansible_default_ipv4.address }}:9100/metrics
+      tags: ['status']

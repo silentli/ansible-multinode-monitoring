@@ -1,0 +1,37 @@
+# Playbook: setup_monitoring.yml
+# Set up Prometheus and Grafana on all monitoring servers.
+# Usage: ansible-playbook -i inventory/hosts.ini playbooks/setup_monitoring.yml
+---
+- name: Setup Prometheus and Grafana on monitoring servers
+  hosts: monitoring_servers
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - { role: prometheus, tags: ['prometheus'] }
+    - { role: grafana, tags: ['grafana'] }
+
+  post_tasks:
+    - name: Wait for Prometheus to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: "{{ prometheus_port }}"
+        delay: 10
+        timeout: 60
+      tags: ['prometheus']
+
+    - name: Wait for Grafana to be available
+      wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: "{{ grafana_port }}"
+        delay: 10
+        timeout: 60
+      tags: ['grafana']
+
+    - name: Display service status
+      debug:
+        msg: |
+          ===== Service Status for {{ inventory_hostname }} =====
+          Prometheus: http://{{ ansible_default_ipv4.address }}:{{ prometheus_port }}
+          Grafana: http://{{ ansible_default_ipv4.address }}:{{ grafana_port }}
+      tags: ['status']
