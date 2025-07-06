@@ -11,11 +11,15 @@ mariadb_service_name: "mariadb"
 mariadb_user: "mysql"
 mariadb_group: "mysql"
 
-# Database configuration (passwords should be overridden in group_vars or vault)
-mariadb_root_password: "rootpassword"
-mariadb_monitoring_password: "monitoringpass"
+# Database configuration (root password should be overridden in group_vars or vault)
+# mariadb_root_password: ""  # Set in group_vars
+
+# Monitoring setup (optional)
+mariadb_create_monitoring_db: true
+mariadb_create_monitoring_user: true
 mariadb_monitoring_database: "monitoring"
 mariadb_monitoring_user: "monitoring"
+# mariadb_monitoring_password: ""  # Optional, defaults to root password if not set
 
 # Network configuration
 mariadb_bind_address: "0.0.0.0"
@@ -39,4 +43,4 @@ mariadb_collation: "utf8mb4_unicode_ci"
 # Logging settings
 mariadb_general_log: 1
 mariadb_slow_query_log: 1
-mariadb_long_query_time: 2 
+mariadb_long_query_time: 2

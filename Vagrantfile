@@ -11,7 +11,14 @@ Vagrant.configure("2") do |config|
   # Create Node 1 - Mock Service Node
   config.vm.define "app-node" do |node1|
     node1.vm.hostname = "node1"
-    node1.vm.network "private_network", ip: "192.168.56.11"
+    node1.vm.network "private_network", ip: "192.168.56.11", netmask: "255.255.255.0"
+    
+    # Explicit SSH port forwarding with fixed port
+    node1.vm.network :forwarded_port,
+      guest: 22,
+      host: 2221,
+      id: "ssh",
+      auto_correct: false
     
     node1.vm.provider "virtualbox" do |vb|
       vb.name = "ansible-multinode-node1"
@@ -24,7 +31,14 @@ Vagrant.configure("2") do |config|
   # Create Node 2 - Database Node
   config.vm.define "db-node" do |node2|
     node2.vm.hostname = "node2"
-    node2.vm.network "private_network", ip: "192.168.56.12"
+    node2.vm.network "private_network", ip: "192.168.56.12", netmask: "255.255.255.0"
+    
+    # Explicit SSH port forwarding with fixed port
+    node2.vm.network :forwarded_port,
+      guest: 22,
+      host: 2222,
+      id: "ssh",
+      auto_correct: false
     
     node2.vm.provider "virtualbox" do |vb|
       vb.name = "ansible-multinode-node2"
@@ -37,7 +51,14 @@ Vagrant.configure("2") do |config|
   # Create Node 3 - Monitoring Node
   config.vm.define "monitor-node" do |node3|
     node3.vm.hostname = "node3"
-    node3.vm.network "private_network", ip: "192.168.56.13"
+    node3.vm.network "private_network", ip: "192.168.56.13", netmask: "255.255.255.0"
+    
+    # Explicit SSH port forwarding with fixed port
+    node3.vm.network :forwarded_port,
+      guest: 22,
+      host: 2223,
+      id: "ssh",
+      auto_correct: false
     
     node3.vm.provider "virtualbox" do |vb|
       vb.name = "ansible-multinode-node3"
