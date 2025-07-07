@@ -38,7 +38,7 @@
 
 - name: Ensure log file exists and is owned by mock-service user
   ansible.builtin.file:
-    path: /var/log/mock-service.log
+    path: "{{ mock_service_log_file }}"
     state: touch
     owner: "{{ mock_service_user }}"
     group: "{{ mock_service_group }}"
