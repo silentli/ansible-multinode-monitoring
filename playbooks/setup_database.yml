@@ -7,7 +7,6 @@
   become: yes
   gather_facts: yes
   vars:
-    ansible_roles_path: "{{ playbook_dir }}/../roles"
     # After loading vault.yml, assign the password variables
     mariadb_root_password: "{{ vault_mariadb_root_password }}"
     mariadb_monitoring_password: "{{ vault_mariadb_monitoring_password }}"
