@@ -12,14 +12,6 @@
       - python3-venv
     state: present
 
-- name: Create mock service directory
-  ansible.builtin.file:
-    path: "{{ mock_service_working_dir }}"
-    state: directory
-    mode: '0755'
-    owner: "{{ mock_service_user }}"
-    group: "{{ mock_service_group }}"
-
 - name: Create mock service user
   ansible.builtin.user:
     name: "{{ mock_service_user }}"
@@ -28,6 +20,14 @@
     home: "{{ mock_service_working_dir }}"
     create_home: no
 
+- name: Create mock service directory
+  ansible.builtin.file:
+    path: "{{ mock_service_working_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ mock_service_user }}"
+    group: "{{ mock_service_group }}"
+
 - name: Copy mock service script
   ansible.builtin.copy:
     src: mock_service.py
@@ -35,6 +35,14 @@
     mode: '0755'
     owner: "{{ mock_service_user }}"
     group: "{{ mock_service_group }}"
+
+- name: Ensure log file exists and is owned by mock-service user
+  ansible.builtin.file:
+    path: /var/log/mock-service.log
+    state: touch
+    owner: "{{ mock_service_user }}"
+    group: "{{ mock_service_group }}"
+    mode: '0644'
 
 - name: Create systemd service file
   ansible.builtin.template:
