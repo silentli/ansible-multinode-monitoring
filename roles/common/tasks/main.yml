@@ -1,0 +1,17 @@
+---
+- name: Ensure all nodes are in /etc/hosts
+  become: yes
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    backup: yes
+  tags: [common, hosts]
+
+- name: Ensure SSH host key verification is disabled for internal communication
+  become: yes
+  lineinfile:
+    path: /etc/ssh/ssh_config
+    line: "StrictHostKeyChecking no"
+    state: present
+    insertafter: "^Host \\*"
+  tags: [common, ssh] 

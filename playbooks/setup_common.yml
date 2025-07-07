@@ -1,0 +1,6 @@
+---
+- name: Setup Common Configuration
+  hosts: all
+  become: yes
+  roles:
+    - common 
