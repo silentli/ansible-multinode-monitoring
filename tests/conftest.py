@@ -2,6 +2,21 @@
 Pytest configuration and fixtures for Ansible role testing.
 """
 import pytest
+import logging
+
+# Configure logging to show only our debug messages
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname)s: %(message)s',
+    force=True
+)
+
+# Suppress debug messages from other libraries
+logging.getLogger('pytest').setLevel(logging.WARNING)
+logging.getLogger('testinfra').setLevel(logging.WARNING)
+logging.getLogger('paramiko').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+logging.getLogger('requests').setLevel(logging.WARNING)
 
 
 @pytest.fixture
@@ -19,10 +34,10 @@ def is_monitoring_server(host):
 @pytest.fixture
 def is_mock_service_server(host):
     """Check if host is a mock service server."""
-    return 'mock_service_servers' in host.ansible.get_variables().get('group_names', [])
+    return 'app_servers' in host.ansible.get_variables().get('group_names', [])
 
 
 @pytest.fixture
 def has_node_exporter(host):
     """Check if host has node exporter."""
-    return 'node_exporters' in host.ansible.get_variables().get('group_names', []) 
+    return 'node_exporters' in host.ansible.get_variables().get('group_names', [])
