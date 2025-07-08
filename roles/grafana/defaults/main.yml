@@ -28,9 +28,9 @@ grafana_bind_address: "0.0.0.0"
 grafana_database_type: "sqlite3"
 grafana_database_path: "/var/lib/grafana/grafana.db"
 
-# Authentication
+# Authentication (password MUST be overridden in group_vars or vault)
 grafana_admin_user: "admin"
-grafana_admin_password: "admin"
+grafana_admin_password: ""  # Set to empty to force explicit override
 
 # Data sources
 grafana_prometheus_url: "http://localhost:9090"

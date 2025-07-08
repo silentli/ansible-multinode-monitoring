@@ -1,4 +1,16 @@
 ---
+- name: Validate required passwords are set
+  ansible.builtin.fail:
+    msg: |
+      Password validation failed:
+      - grafana_admin_password is not defined or empty
+      
+      This password MUST be overridden in group_vars, host_vars, or vault files.
+  when: 
+    - grafana_admin_password == "" or grafana_admin_password is not defined
+  tags: [grafana, validation, always]
+  no_log: true
+
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: yes
@@ -48,14 +60,7 @@
     method: POST
     headers:
       Content-Type: "application/json"
-    body: |
-      {
-        "name": "Prometheus",
-        "type": "prometheus",
-        "url": "{{ grafana_prometheus_url }}",
-        "access": "proxy",
-        "isDefault": true
-      }
+    body: "{{ lookup('template', 'grafana_prometheus_datasource.json.j2') }}"
     status_code: [200, 409]  # 409 means datasource already exists
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
@@ -78,4 +83,4 @@
   delay: 10
   register: grafana_dashboard
   until: grafana_dashboard.status == 200 or grafana_dashboard.status == 409
-  ignore_errors: yes
+  failed_when: grafana_dashboard.status not in [200, 409]
