@@ -1,11 +1,20 @@
 # Playbook: setup_monitoring.yml
 # Set up Prometheus and Grafana on all monitoring servers.
 # Usage: ansible-playbook -i inventory/hosts.ini playbooks/setup_monitoring.yml
+#
+# Debug tasks in roles are tagged 'debug' and controlled by DEBUG environment variable.
+# To run debug tasks: DEBUG=true ansible-playbook ... OR ansible-playbook ... --tags debug
+# To skip debug tasks (default): ansible-playbook ... --skip-tags debug
 ---
 - name: Setup Prometheus and Grafana on monitoring servers
   hosts: monitoring_servers
   become: yes
   gather_facts: yes
+  vars_files:
+    - "{{ playbook_dir }}/../group_vars/monitoring_servers/vault.yml"
+  vars:
+    # After loading vault.yml, assign the password variables
+    grafana_admin_password: "{{ vault_grafana_admin_password }}"
 
   roles:
     - { role: prometheus, tags: ['prometheus'] }
