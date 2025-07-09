@@ -1,4 +1,21 @@
 ---
+# Debug tasks for troubleshooting template issues.
+# These are skipped by default. To run them: ansible-playbook ... --tags debug
+# To skip debug tasks (default): ansible-playbook ... --skip-tags debug
+# Universal debug: Set DEBUG=true environment variable to enable debug tasks across all roles
+
+- name: Debug dashboard template raw output
+  ansible.builtin.debug:
+    msg: "{{ lookup('template', 'grafana_dashboard.json.j2') }}"
+  tags: ['debug']
+  when: ansible_env.DEBUG | default('false') == 'true'
+
+- name: Debug dashboard template type
+  ansible.builtin.debug:
+    msg: "Type: {{ lookup('template', 'grafana_dashboard.json.j2') | type_debug }}"
+  tags: ['debug']
+  when: ansible_env.DEBUG | default('false') == 'true'
+
 - name: Validate required passwords are set
   ansible.builtin.fail:
     msg: |
@@ -9,7 +26,6 @@
   when: 
     - grafana_admin_password == "" or grafana_admin_password is not defined
   tags: [grafana, validation, always]
-  no_log: true
 
 - name: Update apt cache
   ansible.builtin.apt:
@@ -54,33 +70,66 @@
     delay: 10
     timeout: 60
 
-- name: Configure Grafana data source (Prometheus)
+- name: Set Grafana admin password using Grafana CLI
+  ansible.builtin.shell: |
+    grafana-cli admin reset-admin-password {{ grafana_admin_password }}
+  register: password_set_result
+  failed_when: false
+  no_log: true
+
+- name: Restart Grafana after password change
+  ansible.builtin.systemd:
+    name: "{{ grafana_service_name }}"
+    state: restarted
+
+- name: Wait for Grafana to be ready after restart
+  ansible.builtin.wait_for:
+    host: "{{ grafana_bind_address }}"
+    port: "{{ grafana_port }}"
+    delay: 10
+    timeout: 60
+
+- name: Configure Grafana data source (Prometheus) using uri with force_basic_auth
   ansible.builtin.uri:
     url: "http://{{ grafana_bind_address }}:{{ grafana_port }}/api/datasources"
     method: POST
     headers:
       Content-Type: "application/json"
-    body: "{{ lookup('template', 'grafana_prometheus_datasource.json.j2') }}"
-    status_code: [200, 409]  # 409 means datasource already exists
+    body_format: json
+    body:
+      name: "Prometheus"
+      type: "prometheus"
+      url: "http://{{ ansible_default_ipv4.address }}:{{ prometheus_port }}"
+      access: "proxy"
+      isDefault: true
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
-  retries: 5
-  delay: 10
+    force_basic_auth: true
+    status_code: [200, 409]
   register: grafana_datasource
+  retries: 3
+  delay: 10
   until: grafana_datasource.status == 200 or grafana_datasource.status == 409
 
-- name: Import default dashboard
+- name: Copy dashboard template to remote
+  ansible.builtin.template:
+    src: grafana_dashboard.json.j2
+    dest: /tmp/grafana_dashboard.json
+    mode: '0644'
+
+- name: Import default dashboard using uri (dict)
   ansible.builtin.uri:
     url: "http://{{ grafana_bind_address }}:{{ grafana_port }}/api/dashboards/db"
     method: POST
     headers:
       Content-Type: "application/json"
+    body_format: json
     body: "{{ lookup('template', 'grafana_dashboard.json.j2') }}"
-    status_code: [200, 409]  # 409 means dashboard already exists
     user: "{{ grafana_admin_user }}"
     password: "{{ grafana_admin_password }}"
+    force_basic_auth: true
+    status_code: [200, 409]
+  register: grafana_dashboard
   retries: 3
   delay: 10
-  register: grafana_dashboard
   until: grafana_dashboard.status == 200 or grafana_dashboard.status == 409
-  failed_when: grafana_dashboard.status not in [200, 409]

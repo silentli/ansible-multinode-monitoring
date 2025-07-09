@@ -13,7 +13,7 @@
         "targets": [
           {
             "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-            "legendFormat": "{{instance}}"
+            "legendFormat": "{{ ansible_hostname }}"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
@@ -29,7 +29,7 @@
         "targets": [
           {
             "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
-            "legendFormat": "{{instance}}"
+            "legendFormat": "{{ ansible_hostname }}"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
@@ -45,7 +45,7 @@
         "targets": [
           {
             "expr": "(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100",
-            "legendFormat": "{{instance}} - {{mountpoint}}"
+            "legendFormat": "{{ ansible_hostname }}"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
@@ -61,11 +61,11 @@
         "targets": [
           {
             "expr": "rate(node_network_receive_bytes_total[5m])",
-            "legendFormat": "{{instance}} - {{device}} (RX)"
+            "legendFormat": "{{ ansible_hostname }} (RX)"
           },
           {
             "expr": "rate(node_network_transmit_bytes_total[5m])",
-            "legendFormat": "{{instance}} - {{device}} (TX)"
+            "legendFormat": "{{ ansible_hostname }} (TX)"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
@@ -104,15 +104,15 @@
         "targets": [
           {
             "expr": "node_load1",
-            "legendFormat": "{{instance}} - 1m"
+            "legendFormat": "{{ ansible_hostname }} - 1m"
           },
           {
             "expr": "node_load5",
-            "legendFormat": "{{instance}} - 5m"
+            "legendFormat": "{{ ansible_hostname }} - 5m"
           },
           {
             "expr": "node_load15",
-            "legendFormat": "{{instance}} - 15m"
+            "legendFormat": "{{ ansible_hostname }} - 15m"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
