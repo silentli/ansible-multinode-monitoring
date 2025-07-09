@@ -35,7 +35,7 @@
 
     - name: Check if Prometheus is running (monitoring servers)
       ansible.builtin.uri:
-        url: "http://{{ ansible_default_ipv4.address }}:{{ prometheus_port | default(9090) }}/api/v1/status/targets"
+        url: "http://{{ ansible_default_ipv4.address }}:{{ prometheus_port | default(9090) }}/api/v1/targets"
         method: GET
         status_code: 200
       when: inventory_hostname in groups['monitoring_servers']
