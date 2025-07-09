@@ -3,10 +3,9 @@
   ansible.builtin.fail:
     msg: |
       Password validation failed:
-      - mariadb_root_password: {{ mariadb_root_password | default('NOT SET') }}
+      - mariadb_root_password is not defined or empty
       
       This password MUST be overridden in group_vars, host_vars, or vault files.
-      Setting it to empty in defaults prevents accidental deployment with default passwords.
   when: 
     - (mariadb_root_password is not defined) or
       (mariadb_root_password | length == 0)
