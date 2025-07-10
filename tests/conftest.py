@@ -19,6 +19,13 @@ logging.getLogger('urllib3').setLevel(logging.WARNING)
 logging.getLogger('requests').setLevel(logging.WARNING)
 
 
+@pytest.fixture(autouse=True)
+def skip_if_not_linux(host):
+    """Skip all tests if the target is not Linux."""
+    if host.system_info.type != "linux":
+        pytest.skip("These tests only run on Linux targets")
+
+
 @pytest.fixture
 def is_database_server(host):
     """Check if host is a database server."""
