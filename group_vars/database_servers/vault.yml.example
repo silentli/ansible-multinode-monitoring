@@ -1,0 +1,15 @@
+---
+# Encrypted Database Passwords
+# This file should be encrypted with: ansible-vault encrypt group_vars/database_servers/vault.yml
+# 
+# Copy this file to vault.yml, change the passwords, then encrypt it:
+# cp vault.yml.example vault.yml
+# # Edit vault.yml with your passwords
+# ansible-vault encrypt vault.yml
+# # Save your vault password in .vault_pass file
+
+# MariaDB root password
+vault_mariadb_root_password: "YourSecureRootPassword123!"
+
+# MariaDB monitoring user password
+vault_mariadb_monitoring_password: "YourSecureMonitoringPassword456!"

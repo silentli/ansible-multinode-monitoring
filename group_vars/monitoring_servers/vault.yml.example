@@ -1,0 +1,11 @@
+---
+# Grafana Admin Password (encrypted)
+# This file should be encrypted with: ansible-vault encrypt group_vars/monitoring_servers/vault.yml
+#
+# Copy this file to vault.yml, change the password, then encrypt it:
+# cp vault.yml.example vault.yml
+# # Edit vault.yml with your password
+# ansible-vault encrypt vault.yml
+# # Save your vault password in .vault_pass file
+
+vault_grafana_admin_password: "YourSecureGrafanaPassword123!" 
