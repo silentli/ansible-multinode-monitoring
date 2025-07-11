@@ -2,6 +2,8 @@
 .vault_pass
 *.vault_pass
 vault_pass.txt
+group_vars/database_servers/vault.yml
+group_vars/monitoring_servers/vault.yml
 
 # Ansible artifacts
 *.retry
@@ -55,4 +57,7 @@ logs/
 .cache/
 __pycache__/
 *.pyc
-*.pyo 
+*.pyo
+
+# Virtual environments
+venv/
