@@ -19,11 +19,17 @@ GRAFANA_CONFIG_DIR = os.environ["GRAFANA_CONFIG_DIR"]
 GRAFANA_DATA_DIR = os.environ["GRAFANA_DATA_DIR"]
 GRAFANA_LOG_DIR = os.environ["GRAFANA_LOG_DIR"]
 
+# Standard Grafana values
+GRAFANA_PACKAGE_NAME = "grafana"
+GRAFANA_PROCESS_NAME = "grafana"
+GRAFANA_CONFIG_FILE = "grafana.ini"
+GRAFANA_API_HEALTH_ENDPOINT = "/api/health"
+
 
 def test_grafana_package_installed(host, is_monitoring_server):
     """Test that Grafana package is installed on monitoring servers."""
     if is_monitoring_server:
-        package = host.package("grafana")
+        package = host.package(GRAFANA_PACKAGE_NAME)
         assert package.is_installed
 
 
@@ -75,7 +81,7 @@ def test_grafana_directories_and_permissions(host, is_monitoring_server):
 def test_grafana_config_file_exists(host, is_monitoring_server):
     """Test that Grafana configuration file exists on monitoring servers."""
     if is_monitoring_server:
-        config_file = host.file(f"{GRAFANA_CONFIG_DIR}/grafana.ini")
+        config_file = host.file(f"{GRAFANA_CONFIG_DIR}/{GRAFANA_CONFIG_FILE}")
         assert config_file.exists
         assert config_file.is_file
 
@@ -103,12 +109,12 @@ def test_grafana_process_running(host, is_monitoring_server):
     """Test that Grafana process is running on monitoring servers."""
     if is_monitoring_server:
         try:
-            process = host.process.get(comm="grafana")
+            process = host.process.get(comm=GRAFANA_PROCESS_NAME)
             assert process is not None
-            assert "grafana" in process.comm
+            assert GRAFANA_PROCESS_NAME in process.comm
         except RuntimeError:
             # Process not found, which is a failure
-            assert False, "Grafana process not found"
+            assert False, f"{GRAFANA_PROCESS_NAME} process not found"
 
 
 def test_grafana_web_interface_accessible(host, is_monitoring_server):
@@ -123,7 +129,7 @@ def test_grafana_api_endpoints(host, is_monitoring_server):
     """Test that Grafana API endpoints are accessible on monitoring servers."""
     if is_monitoring_server:
         # Test health endpoint
-        result = host.run(f"curl -s -o /dev/null -w '%{{http_code}}' http://localhost:{GRAFANA_PORT}/api/health")
+        result = host.run(f"curl -s -o /dev/null -w '%{{http_code}}' http://localhost:{GRAFANA_PORT}{GRAFANA_API_HEALTH_ENDPOINT}")
         assert result.rc == 0
         assert result.stdout == "200"
 
@@ -134,20 +140,6 @@ def test_grafana_firewall_rule(host, is_monitoring_server):
         ufw_status = host.run("ufw status")
         if ufw_status.rc == 0 and "Status: active" in ufw_status.stdout:
             assert f"{GRAFANA_PORT}/tcp" in ufw_status.stdout
-
-
-def test_grafana_service_restart_works(host, is_monitoring_server):
-    """Test that Grafana service can be restarted on monitoring servers."""
-    if is_monitoring_server:
-        # Check if service is running before restart
-        service = host.service(GRAFANA_SERVICE_NAME)
-        assert service.is_running
-        
-        # Note: Service restart test is skipped in automated testing
-        # as it requires sudo privileges and can interfere with other tests
-        # In a real environment, you would test this manually with:
-        # sudo systemctl restart grafana-server
-        assert True, "Service restart test skipped - service is running"
 
 
 def test_grafana_plugins_directory(host, is_monitoring_server):
