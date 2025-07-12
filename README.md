@@ -22,6 +22,19 @@ ansible-multinode-monitoring/
 └── Vagrantfile          # Local VM provisioning
 ```
 
+## Prerequisites
+
+### For Local Development (Vagrant)
+- **Vagrant** (2.2.0+) with VirtualBox or libvirt provider
+- **Ansible** (2.9+) installed locally
+- **Python 3.11+** for running tests
+- **Make** (for using the provided Makefile commands)
+
+### Python Dependencies (for testing)
+```bash
+pip install -r tests/requirements.txt
+```
+
 ## Quick Start
 1. **Provision VMs and install dependencies:**
    ```bash
