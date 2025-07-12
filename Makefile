@@ -4,7 +4,7 @@
 .PHONY: help install-ansible install-deps check-prerequisites provision start destroy shutdown clean status
 .PHONY: test test-fast test-integration test-smoke test-all-roles
 .PHONY: test-mariadb test-prometheus test-node-exporter test-grafana test-mock-service
-.PHONY: test-database test-monitoring setup deploy deploy-database deploy-app deploy-monitoring check-health
+.PHONY: test-database test-monitoring setup setup-vault deploy deploy-database deploy-app deploy-monitoring check-health
 
 # Default target
 .DEFAULT_GOAL := help
@@ -207,8 +207,19 @@ setup: install-ansible install-deps provision ## Complete setup (install deps + 
 	@echo "✓ Complete setup finished"
 	@echo ""
 	@echo "$(BLUE)Next steps:$(NC)"
+	@echo "  make setup-vault    # Set up vault configuration"
 	@echo "  make deploy         # Deploy the monitoring stack"
 	@echo "  make test           # Run tests to verify deployment"
+
+setup-vault: ## Set up vault configuration interactively
+	@echo "Setting up vault configuration..."
+	@if [ -f "scripts/setup-vault.sh" ]; then \
+		./scripts/setup-vault.sh; \
+	else \
+		echo "Error: scripts/setup-vault.sh not found"; \
+		echo "Please create the script first or set up vault manually"; \
+		exit 1; \
+	fi
 
 clean: ## Clean up test artifacts and cache files
 	@echo "Cleaning up..."
