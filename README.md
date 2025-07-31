@@ -97,3 +97,5 @@ pip install -r tests/requirements.txt
 - All playbooks and roles use FQCN (Fully Qualified Collection Name) for clarity.
 - Example vault files for easy onboarding and secure secrets management.
 - Comprehensive, maintainable test suite for all roles and integration.
+
+> **Note:** This project was inspired by a job description from Brainlab. It is an independent project created solely for the purpose of practicing and demonstrating relevant technologies.
